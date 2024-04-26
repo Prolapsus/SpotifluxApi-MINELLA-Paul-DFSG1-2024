@@ -4,23 +4,25 @@ namespace App\Entity;
 
 use App\Repository\TrackRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TrackRepository::class)]
 class Track
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['read','create','update'])]
+    #[Assert\NotBlank(groups: ['create'])]
     private ?string $title = null;
 
-    #[ORM\Column]
-    private ?int $duration = null;
-
-    #[ORM\ManyToOne(inversedBy: 'track')]
-    private ?Album $album = null;
+    #[ORM\ManyToOne(targetEntity: Album::class, inversedBy: 'tracks')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $album;
 
     public function getId(): ?int
     {
@@ -32,21 +34,9 @@ class Track
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(string $title): self
     {
         $this->title = $title;
-
-        return $this;
-    }
-
-    public function getDuration(): ?int
-    {
-        return $this->duration;
-    }
-
-    public function setDuration(int $duration): static
-    {
-        $this->duration = $duration;
 
         return $this;
     }
@@ -56,7 +46,7 @@ class Track
         return $this->album;
     }
 
-    public function setAlbum(?Album $album): static
+    public function setAlbum(?Album $album): self
     {
         $this->album = $album;
 

@@ -6,27 +6,30 @@ use App\Repository\ArtistRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ArtistRepository::class)]
 class Artist
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
+    #[ORM\Column(type: 'integer')]
+    #[Groups(['read'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['read','create','update'])]
+    #[Assert\NotBlank(groups: ['create'])]
     private ?string $name = null;
 
-    /**
-     * @var Collection<int, Album>
-     */
     #[ORM\OneToMany(targetEntity: Album::class, mappedBy: 'artist')]
-    private Collection $album;
+    #[Groups(['read','create','update'])]
+    private ?string $albums = null;
 
     public function __construct()
     {
-        $this->album = new ArrayCollection();
+        $this->albums = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -39,7 +42,7 @@ class Artist
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -47,26 +50,26 @@ class Artist
     }
 
     /**
-     * @return Collection<int, Album>
+     * @return Collection|Album[]
      */
-    public function getAlbum(): Collection
+    public function getAlbums(): Collection
     {
-        return $this->album;
+        return $this->albums;
     }
 
-    public function addAlbum(Album $album): static
+    public function addAlbum(Album $album): self
     {
-        if (!$this->album->contains($album)) {
-            $this->album->add($album);
+        if (!$this->albums->contains($album)) {
+            $this->albums[] = $album;
             $album->setArtist($this);
         }
 
         return $this;
     }
 
-    public function removeAlbum(Album $album): static
+    public function removeAlbum(Album $album): self
     {
-        if ($this->album->removeElement($album)) {
+        if ($this->albums->removeElement($album)) {
             // set the owning side to null (unless already changed)
             if ($album->getArtist() === $this) {
                 $album->setArtist(null);

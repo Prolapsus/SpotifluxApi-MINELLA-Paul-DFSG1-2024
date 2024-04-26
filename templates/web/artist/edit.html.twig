@@ -1,0 +1,16 @@
+{# templates/web/artist/edit.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier l'artiste{% endblock %}
+
+{% block body %}
+    <h1>Modifier {{ artist.name }}</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.name) }}
+    <button type="submit">Modifier</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_web_artist_index') }}">Retour à la liste</a>
+{% endblock %}

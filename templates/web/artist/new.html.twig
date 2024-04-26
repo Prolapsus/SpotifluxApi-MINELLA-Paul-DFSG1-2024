@@ -1,0 +1,16 @@
+{# templates/web/artist/new.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvel artiste{% endblock %}
+
+{% block body %}
+    <h1>Nouvel artiste</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.name) }}
+    <button type="submit">Créer</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_web_artist_index') }}">Retour à la liste</a>
+{% endblock %}

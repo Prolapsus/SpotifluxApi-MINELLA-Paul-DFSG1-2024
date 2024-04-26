@@ -1,0 +1,13 @@
+{# templates/web/artist/show.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails de l'artiste{% endblock %}
+
+{% block body %}
+    <h1>{{ artist.name }}</h1>
+
+    <!-- Afficher les détails de l'artiste selon vos besoins -->
+
+    <a href="{{ path('app_web_artist_index') }}">Retour à la liste</a>
+{% endblock %}

@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\AlbumRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\AlbumRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: AlbumRepository::class)]
 class Album
@@ -13,26 +14,30 @@ class Album
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['album:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Groups(['album:read', 'album:create', 'album:update','artist:read'])]
     private ?string $name = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
+    #[Groups(['album:read', 'album:create', 'album:update'])]
     private ?int $year = null;
 
-    #[ORM\ManyToOne(inversedBy: 'album')]
+    #[ORM\ManyToOne(inversedBy: 'albums')]
     private ?Artist $artist = null;
 
     /**
      * @var Collection<int, Track>
      */
     #[ORM\OneToMany(targetEntity: Track::class, mappedBy: 'album')]
-    private Collection $track;
+    #[Groups([ 'album:read'])]
+    private Collection $tracks;
 
     public function __construct()
     {
-        $this->track = new ArrayCollection();
+        $this->tracks = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -57,7 +62,7 @@ class Album
         return $this->year;
     }
 
-    public function setYear(int $year): static
+    public function setYear(?int $year): static
     {
         $this->year = $year;
 
@@ -79,15 +84,15 @@ class Album
     /**
      * @return Collection<int, Track>
      */
-    public function getTrack(): Collection
+    public function getTracks(): Collection
     {
-        return $this->track;
+        return $this->tracks;
     }
 
     public function addTrack(Track $track): static
     {
-        if (!$this->track->contains($track)) {
-            $this->track->add($track);
+        if (!$this->tracks->contains($track)) {
+            $this->tracks->add($track);
             $track->setAlbum($this);
         }
 
@@ -96,7 +101,7 @@ class Album
 
     public function removeTrack(Track $track): static
     {
-        if ($this->track->removeElement($track)) {
+        if ($this->tracks->removeElement($track)) {
             // set the owning side to null (unless already changed)
             if ($track->getAlbum() === $this) {
                 $track->setAlbum(null);
