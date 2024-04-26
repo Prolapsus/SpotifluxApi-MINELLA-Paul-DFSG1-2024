@@ -1,0 +1,19 @@
+{# templates/web/artist/index.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des artistes{% endblock %}
+
+{% block body %}
+    <h1>Liste des artistes</h1>
+
+    <ul>
+        {% for artist in artists %}
+            <li>
+                <a href="{{ path('app_web_artist_show', {'id': artist.id}) }}">{{ artist.name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ path('app_web_artist_new') }}">Ajouter un artiste</a>
+{% endblock %}
